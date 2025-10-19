@@ -31,24 +31,23 @@ def get_browser_config() -> BrowserConfig:
 
 def get_llm_strategy() -> LLMExtractionStrategy:
     """
-    Returns the configuration for the language model extraction strategy.
-
-    Returns:
-        LLMExtractionStrategy: The settings for how to extract data using LLM.
+    使用 DeepSeek（deepseek/deepseek-chat）并要求严格 JSON 输出。
+    input_format 使用 html 以保留页面结构，有助于抽取。
     """
-    # https://docs.crawl4ai.com/api/strategies/#llmextractionstrategy
     return LLMExtractionStrategy(
-        provider="groq/deepseek-r1-distill-llama-70b",  # Name of the LLM provider
-        api_token=os.getenv("GROQ_API_KEY"),  # API token for authentication
-        schema=Venue.model_json_schema(),  # JSON schema of the data model
-        extraction_type="schema",  # Type of extraction to perform
+        provider="deepseek/deepseek-chat",
+        api_token=os.getenv("DEEPSEEK_API_KEY"),
+        schema=Venue.model_json_schema(),
+        extraction_type="schema",
         instruction=(
-            "Extract all venue objects with 'name', 'location', 'price', 'capacity', "
-            "'rating', 'reviews', and a 1 sentence description of the venue from the "
-            "following content."
-        ),  # Instructions for the LLM
-        input_format="markdown",  # Format of the input content
-        verbose=True,  # Enable verbose logging
+            "你将收到一个 HTML 片段，里面包含若干本书的信息。只输出一个遵循下面 JSON Schema 的数组，"
+            "不要添加任何解释文字或多余字段。若某个字段缺失，请按说明给默认值（rating: 0.0, reviews: 0, description: \"\"）。\n\n"
+            f"Schema:\n{json.dumps(Venue.model_json_schema(), ensure_ascii=False)}\n\n"
+            "输出示例：\n"
+            '[{"name":"示例书名","author":"作者","publisher":"出版社","pub_date":"2024-01","rating":4.5,"reviews":120,"description":"一句话简介"}, ...]'
+        ),
+        input_format="html",
+        verbose=True,
     )
 
 

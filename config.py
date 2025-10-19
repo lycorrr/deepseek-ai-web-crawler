@@ -1,12 +1,13 @@
 # config.py
 
-BASE_URL = "https://www.theknot.com/marketplace/wedding-reception-venues-atlanta-ga"
-CSS_SELECTOR = "[class^='info-container']"
+BASE_URL = "https://book.douban.com/latest"
+# 抓取每本书所在的 li.media 节点，保留结构化 HTML
+CSS_SELECTOR = ".list li.media"
 REQUIRED_KEYS = [
     "name",
-    "price",
-    "location",
-    "capacity",
+    "author",
+    "publisher",
+    "pub_date",
     "rating",
     "reviews",
     "description",
